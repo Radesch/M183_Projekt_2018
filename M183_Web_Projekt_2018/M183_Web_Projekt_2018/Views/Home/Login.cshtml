@@ -1,0 +1,15 @@
+﻿@{
+    ViewBag.Title = "Login Page";
+}
+
+<div class="row" style="margin-top:80px;">
+    <div class="col-lg-8 col-lg-offset-2">
+        <legend>Token Log In</legend>
+        <form class="well" action="~/Home/TokenLogin" method="post">
+            <legend><small>Token</small></legend>
+            <input type="text" name="token" value="" class="form-control" />
+            <br />
+            <input type="submit" name="" value="Verify" class="btn btn-primary">
+        </form>
+    </div>
+</div>

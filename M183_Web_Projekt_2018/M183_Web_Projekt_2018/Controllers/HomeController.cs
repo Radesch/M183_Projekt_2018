@@ -43,7 +43,7 @@ namespace M183_Web_Projekt_2018.Controllers
 
             // DB Connection
             SqlConnection con = new SqlConnection();
-            con.ConnectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Daniele\\Documents\\M183_Project_Database.mdf;Integrated Security=True;Connect Timeout=30";
+            con.ConnectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\GitHub Project\\Data\\m183_project.mdf;Integrated Security=True;Connect Timeout=30";
 
             SqlCommand cmd = new SqlCommand();
             SqlDataReader reader;
@@ -66,14 +66,24 @@ namespace M183_Web_Projekt_2018.Controllers
                 {
                     var request = (HttpWebRequest)WebRequest.Create("https://rest.nexmo.com/sms/json");
 
-                    var secret = "TEST_SECRET";
+                    var chars = "0123456789";
+                    var stringChars = new char[4];
+                    var random = new Random();
+
+                    for (int i = 0; i < stringChars.Length; i++)
+                    {
+                        stringChars[i] = chars[random.Next(chars.Length)];
+                    }
+
+                    var finalString = new String(stringChars);
+
 
                     // Send SMS via Nexmo API
                     var postData = "api_key=282e7d22";
                     postData += "&api_secret=865824a393b32341";
                     postData += "&to=" + mobileNumber;
                     postData += "&from=\"\"NEXMO\"\"";
-                    postData += "&text=\"" + secret + "\"";
+                    postData += "&text=\"" + finalString + "\"";
                     var data = Encoding.ASCII.GetBytes(postData);
 
                     request.Method = "POST";
@@ -99,6 +109,21 @@ namespace M183_Web_Projekt_2018.Controllers
             con.Close();
 
             return View();
+        }
+        [HttpPost]
+        public void TokenLogin()
+        {
+            var token = Request["token"];
+
+            if (token == "TEST_SECRET")
+            {
+                // -> "Token is correct";
+            }
+            else
+            {
+                // -> "Wrong Token";
+            }
+
         }
     }
 }
