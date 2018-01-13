@@ -38,6 +38,8 @@ namespace M183_Web_Projekt_2018.Controllers
             var username = Request["username"];
             var password = Request["password"];
             string mobileNumber = "";
+            string currentUsername = "";
+            string currentPassword = "";
             var mode = "SMS"; // OR SMS
             int userid = 0;
             // DB Connection
@@ -61,6 +63,8 @@ namespace M183_Web_Projekt_2018.Controllers
                 {
                     mobileNumber = reader.GetString(5);
                     userid = reader.GetInt32(0);
+                    currentUsername = reader.GetString(1);
+                    currentPassword = reader.GetString(2);
                 }
                 if (mode == "SMS")
                 {
@@ -114,22 +118,57 @@ namespace M183_Web_Projekt_2018.Controllers
                 ViewBag.Message = "Wrong Credentials";
             }
             con.Close();
-
+            Session["username"] = username;
+            Session["password"] = password;
             return View();
         }
         [HttpPost]
-        public void TokenLogin()
+        public ActionResult TokenLogin()
         {
+            var current_user = (string)Session["username"];
+            var current_password = (string)Session["password"];
             var token = Request["token"];
+            int userid = 0;
+            string current_token = "";
 
-            if (token == "TEST_SECRET")
+            SqlConnection con = new SqlConnection();
+            con.ConnectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\GitHub Project\\Data\\m183_project.mdf;Integrated Security=True;Connect Timeout=30";
+            SqlCommand cmd = new SqlCommand();
+            SqlDataReader reader;
+            cmd.CommandText = "SELECT Id FROM [dbo].[user] WHERE [username] = @current_user AND [password] = @current_password";
+            cmd.Parameters.AddWithValue("@current_user", current_user);
+            cmd.Parameters.AddWithValue("@current_password", current_password);
+            cmd.Connection = con;
+
+            con.Open();
+
+            reader = cmd.ExecuteReader();
+            if (reader.Read())
+            {
+                userid = reader.GetInt32(0);
+            }
+            con.Close();
+            cmd.CommandText = "SELECT Token FROM [dbo].[Token] WHERE [UserId] = @userid";
+            cmd.Parameters.AddWithValue("@userid", userid);
+            cmd.Connection = con;
+            con.Open();
+
+            reader = cmd.ExecuteReader();
+            if (reader.Read())
+            {
+                current_token = reader.GetString(0);
+            }
+            if (token == current_token)
             {
                 // -> "Token is correct";
+                return RedirectToAction("Dashboard", "User");
             }
             else
             {
-                // -> "Wrong Token";
+                ViewBag.Message = "Wrong Credentials";
             }
+            con.Close();
+            return null;
 
         }
     }
