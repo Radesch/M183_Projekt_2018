@@ -31,7 +31,6 @@ namespace M183_Web_Projekt_2018.Controllers
 
             return View();
         }
-
         [HttpPost]
         public ActionResult Login()
         {
@@ -40,7 +39,7 @@ namespace M183_Web_Projekt_2018.Controllers
             var password = Request["password"];
             string mobileNumber = "";
             var mode = "SMS"; // OR SMS
-
+            int userid = 0;
             // DB Connection
             SqlConnection con = new SqlConnection();
             con.ConnectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\GitHub Project\\Data\\m183_project.mdf;Integrated Security=True;Connect Timeout=30";
@@ -61,13 +60,15 @@ namespace M183_Web_Projekt_2018.Controllers
                 while (reader.Read())
                 {
                     mobileNumber = reader.GetString(5);
+                    userid = reader.GetInt32(0);
                 }
                 if (mode == "SMS")
                 {
                     var request = (HttpWebRequest)WebRequest.Create("https://rest.nexmo.com/sms/json");
 
+                    //Generate random Token
                     var chars = "0123456789";
-                    var stringChars = new char[4];
+                    var stringChars = new char[6];
                     var random = new Random();
 
                     for (int i = 0; i < stringChars.Length; i++)
@@ -98,8 +99,14 @@ namespace M183_Web_Projekt_2018.Controllers
                     var response = (HttpWebResponse)request.GetResponse();
 
                     var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
+                    reader.Close();
 
                     ViewBag.Message = responseString;
+                    cmd.CommandText = "Insert into Token (Token,UserId,Expiry) VALUES (@finalString,@userid, @Expiry)";
+                    cmd.Parameters.AddWithValue("@finalString", finalString);
+                    cmd.Parameters.AddWithValue("@userid", userid);
+                    cmd.Parameters.AddWithValue("@Expiry", DateTime.Now.AddMinutes(5)); //5 mins
+                    cmd.ExecuteNonQuery();
                 }
             }
             else
