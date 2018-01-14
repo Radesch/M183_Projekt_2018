@@ -51,6 +51,7 @@ namespace M183_Web_Projekt_2018.Controllers
             cmd.Connection.Open();
             reader = cmd.ExecuteReader();
 
+
             // Check if User exists
             if (reader.HasRows)
             {
@@ -77,34 +78,39 @@ namespace M183_Web_Projekt_2018.Controllers
 
                     var finalString = new String(stringChars);
 
-                    // Send SMS via Nexmo API
-                    var postData = "api_key=282e7d22";
-                    postData += "&api_secret=865824a393b32341";
-                    postData += "&to=" + mobileNumber;
-                    postData += "&from=\"\"NEXMO\"\"";
-                    postData += "&text=\"" + finalString + "\"";
-                    var data = Encoding.ASCII.GetBytes(postData);
+                    //// Send SMS via Nexmo API
+                    //var postData = "api_key=0a98cb9c";
+                    //postData += "&api_secret=9ae22e80dcfb1e5a";
+                    //postData += "&to=" + mobileNumber;
+                    //postData += "&from=\"\"NEXMO\"\"";
+                    //postData += "&text=\"" + finalString + "\"";
+                    //var data = Encoding.ASCII.GetBytes(postData);
 
-                    request.Method = "POST";
-                    request.ContentType = "application/x-www-form-urlencoded";
-                    request.ContentLength = data.Length;
+                    //request.Method = "POST";
+                    //request.ContentType = "application/x-www-form-urlencoded";
+                    //request.ContentLength = data.Length;
 
-                    using (var stream = request.GetRequestStream())
-                    {
-                        stream.Write(data, 0, data.Length);
-                    }
+                    //using (var stream = request.GetRequestStream())
+                    //{
+                    //    stream.Write(data, 0, data.Length);
+                    //}
 
-                    var response = (HttpWebResponse)request.GetResponse();
+                    //var response = (HttpWebResponse)request.GetResponse();
+                    //var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
+                    //ViewBag.Message = responseString;
 
-                    var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
                     reader.Close();
+                    cmd.Connection.Close();
 
-                    ViewBag.Message = responseString;
                     cmd.CommandText = "Insert into Token (Token,UserId,Expiry) VALUES (@finalString,@userid, @Expiry)";
+                    cmd.Parameters.Clear();
                     cmd.Parameters.AddWithValue("@finalString", finalString);
                     cmd.Parameters.AddWithValue("@userid", userid);
                     cmd.Parameters.AddWithValue("@Expiry", DateTime.Now.AddMinutes(5)); //5 mins
+
+                    cmd.Connection.Open();
                     cmd.ExecuteNonQuery();
+                    cmd.Connection.Close();
                 }
             }
             else
@@ -127,6 +133,7 @@ namespace M183_Web_Projekt_2018.Controllers
             SqlCommand cmd = GetSqlConnection();
             SqlDataReader reader;
             cmd.CommandText = "SELECT Id FROM [dbo].[user] WHERE [username] = @current_user AND [password] = @current_password";
+            cmd.Parameters.Clear();
             cmd.Parameters.AddWithValue("@current_user", current_user);
             cmd.Parameters.AddWithValue("@current_password", current_password);
 
@@ -138,7 +145,8 @@ namespace M183_Web_Projekt_2018.Controllers
                 userid = reader.GetInt32(0);
             }
             cmd.Connection.Close();
-            cmd.CommandText = "SELECT Token FROM [dbo].[Token] WHERE [UserId] = @userid";
+            cmd.CommandText = "SELECT Token FROM [dbo].[Token] WHERE [UserId] = @userid ORDER BY Id Desc";
+            cmd.Parameters.Clear();
             cmd.Parameters.AddWithValue("@userid", userid);
             cmd.Connection.Open();
 
@@ -150,7 +158,12 @@ namespace M183_Web_Projekt_2018.Controllers
             if (token == current_token)
             {
                 // -> "Token is correct";
+                Session["username"] = current_user;
+                Session["userid"] = userid;
+
+                CreateLogs(userid);
                 return RedirectToAction("Dashboard", "User");
+
             }
             else
             {
@@ -158,6 +171,37 @@ namespace M183_Web_Projekt_2018.Controllers
             }
             cmd.Connection.Close();
             return null;
+        }
+
+        private void CreateLogs(int userId)
+        {
+            SqlCommand cmd = GetSqlConnection();
+            cmd.Connection.Open();
+
+            // Userlog
+            cmd.CommandText = "INSERT INTO UserLog (UserId, Action) VALUES (@userId, @action)";
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@action", "Loged in");
+            cmd.ExecuteNonQuery();
+            cmd.Connection.Close();
+
+
+            // UserLogin
+            cmd.Connection.Open();
+            cmd.CommandText = @"INSERT INTO UserLogin (UserId, IP, SessionId, CreatedOn, ModifiedOn, DeletedOn)
+                               VALUES (@uid, @ipAddress, @sessionId, @createdOn, @modifiedOn, @deletedOn)";
+
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("@uid", userId);
+            cmd.Parameters.AddWithValue("@ipAddress", Request.UserHostAddress);
+            cmd.Parameters.AddWithValue("@sessionId", Session.SessionID);
+            cmd.Parameters.AddWithValue("@createdOn", DateTime.Now);
+            cmd.Parameters.AddWithValue("@modifiedOn", DBNull.Value);
+            cmd.Parameters.AddWithValue("@deletedOn", DBNull.Value);
+            cmd.ExecuteNonQuery();
+
+            cmd.Connection.Close();
         }
 
         #region Private section
