@@ -126,13 +126,14 @@ namespace M183_Web_Projekt_2018.Controllers
             var current_user = Request["username"];
             var current_password = Request["password"];
             var token = Request["token"];
-            int userid = 0;
-            string current_token = "";
+            var userid = 0;
+            var userRole = "";
+            var current_token = "";
 
 
             SqlCommand cmd = GetSqlConnection();
             SqlDataReader reader;
-            cmd.CommandText = "SELECT Id FROM [dbo].[user] WHERE [username] = @current_user AND [password] = @current_password";
+            cmd.CommandText = "SELECT Id, Role FROM [dbo].[user] WHERE [username] = @current_user AND [password] = @current_password";
             cmd.Parameters.Clear();
             cmd.Parameters.AddWithValue("@current_user", current_user);
             cmd.Parameters.AddWithValue("@current_password", current_password);
@@ -143,6 +144,7 @@ namespace M183_Web_Projekt_2018.Controllers
             if (reader.Read())
             {
                 userid = reader.GetInt32(0);
+                userRole = reader.GetString(1);
             }
             cmd.Connection.Close();
             cmd.CommandText = "SELECT Token FROM [dbo].[Token] WHERE [UserId] = @userid ORDER BY Id Desc";
@@ -162,7 +164,25 @@ namespace M183_Web_Projekt_2018.Controllers
                 Session["userid"] = userid;
 
                 CreateLogs(userid);
-                return RedirectToAction("Dashboard", "User");
+
+                switch (userRole)
+                {
+                    case "user":
+                        return RedirectToAction("Dashboard", "User");
+                    case "admin":
+                        return RedirectToAction("Dashboard", "Admin");
+                    // Log Error
+                    default:
+                        cmd = GetSqlConnection();
+                        cmd.CommandText = "INSERT INTO UserLog (UserId, Action) VALUES (@userId, @action)";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@userid", userid);
+                        cmd.Parameters.AddWithValue("@action", "error");
+                        cmd.Connection.Open();
+                        cmd.ExecuteNonQuery();
+                        cmd.Connection.Close();
+                        break;
+                }
 
             }
             else
