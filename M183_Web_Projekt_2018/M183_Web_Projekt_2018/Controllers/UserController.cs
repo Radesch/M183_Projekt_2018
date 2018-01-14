@@ -32,10 +32,10 @@ namespace M183_Web_Projekt_2018.Controllers
             {
                 userRole = reader.GetString(0);
             }
-
+            cmd.Connection.Close();
             if (userRole == "user")
             {
-    
+                
             }
             else
             {
@@ -44,6 +44,7 @@ namespace M183_Web_Projekt_2018.Controllers
 
             return View();
         }
+
         private void CreateLogs(int userId)
         {
             SqlCommand cmd = GetSqlConnection();
@@ -74,6 +75,7 @@ namespace M183_Web_Projekt_2018.Controllers
 
             cmd.Connection.Close();
         }
+
         [HttpPost]
         public ActionResult Logout()
         {
