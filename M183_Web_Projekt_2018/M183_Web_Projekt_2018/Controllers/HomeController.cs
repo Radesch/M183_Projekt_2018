@@ -117,16 +117,13 @@ namespace M183_Web_Projekt_2018.Controllers
             {
                 ViewBag.Message = "Wrong Credentials";
             }
-            con.Close();
-            Session["username"] = username;
-            Session["password"] = password;
             return View();
         }
         [HttpPost]
         public ActionResult TokenLogin()
         {
-            var current_user = (string)Session["username"];
-            var current_password = (string)Session["password"];
+            var current_user = Request["username"];
+            var current_password = Request["password"];
             var token = Request["token"];
             int userid = 0;
             string current_token = "";

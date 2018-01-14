@@ -12,8 +12,8 @@
             <input type="text" name="token" value="" class="form-control" />
             <br />
             <input type="submit" name="" value="Verify" class="btn btn-primary">
-            <input type="hidden" name="username"/>
-            <input type="hidden" name="password"/>
+            @Html.Hidden("username", Request["username"])
+            @Html.Hidden("password", Request["password"])
         </form>
     </div>
 </div>
