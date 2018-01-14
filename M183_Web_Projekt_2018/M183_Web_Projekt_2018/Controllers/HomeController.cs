@@ -21,16 +21,16 @@ namespace M183_Web_Projekt_2018.Controllers
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
-
             return View();
         }
+
         [HttpGet]
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";
-
             return View();
         }
+
         [HttpPost]
         public ActionResult Login()
         {
@@ -43,14 +43,12 @@ namespace M183_Web_Projekt_2018.Controllers
             var mode = "SMS"; // OR SMS
             int userid = 0;
 
-
             SqlCommand cmd = GetSqlConnection();
             SqlDataReader reader;
 
             cmd.CommandText = "SELECT * FROM [dbo].[User] WHERE [username] = '" + username + "' AND [password] = '" + password + "'";
             cmd.Connection.Open();
             reader = cmd.ExecuteReader();
-
 
             // Check if User exists
             if (reader.HasRows)
@@ -112,10 +110,16 @@ namespace M183_Web_Projekt_2018.Controllers
                     cmd.ExecuteNonQuery();
                     cmd.Connection.Close();
                 }
+                else
+                {
+                    ViewBag.Message = "Wrong Token";
+                    LogFailedTry(userid);
+                }
             }
             else
             {
                 ViewBag.Message = "Wrong Credentials";
+                LogFailedTry(userid);
             }
             return View();
         }
@@ -235,6 +239,49 @@ namespace M183_Web_Projekt_2018.Controllers
             cmd.Connection = con;
 
             return cmd;
+        }
+
+        private void LogFailedTry(int userId)
+        {
+            SqlCommand cmd = GetSqlConnection();
+            cmd.Connection.Open();
+
+            // Userlog
+            cmd.CommandText = "INSERT INTO UserLog (UserId, Action) VALUES (@userId, @action)";
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@action", "Failed");
+            cmd.ExecuteNonQuery();
+            cmd.Connection.Close();
+
+            // Count how many times a Login was tryed
+            cmd.CommandText = "SELECT COUNT(*) FROM UserLog WHERE UserId = @UserId AND Action = Failed";
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@action", "Error");
+
+            // More than 3 times failed blocks the User
+            var reader = cmd.ExecuteReader(System.Data.CommandBehavior.SingleRow);
+            if (reader.HasRows)
+            {
+                if (reader.GetInt32(0) > 2)
+                {
+                    BlockUser(userId);
+                }
+            }
+            cmd.Connection.Close();
+        }
+
+        private void BlockUser(int userId)
+        {
+            SqlCommand cmd = GetSqlConnection();
+            cmd.Connection.Open();
+
+            cmd.CommandText = "UPDATE User SET Status = 'blocked' WHERE UserId = @userId";
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.ExecuteNonQuery();
+            cmd.Connection.Close();
         }
         #endregion
     }
