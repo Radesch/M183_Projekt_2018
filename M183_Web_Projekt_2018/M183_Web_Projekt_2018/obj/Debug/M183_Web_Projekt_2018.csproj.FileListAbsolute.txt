@@ -96,3 +96,12 @@ C:\GitHub Project\M183_Web_Projekt_2018\M183_Web_Projekt_2018\obj\Debug\M183_Web
 C:\GitHub Project\M183_Web_Projekt_2018\M183_Web_Projekt_2018\obj\Debug\M183_Web_Projekt_2018.csproj.CoreCompileInputs.cache
 C:\GitHub Project\M183_Web_Projekt_2018\M183_Web_Projekt_2018\obj\Debug\M183_Web_Projekt_2018.dll
 C:\GitHub Project\M183_Web_Projekt_2018\M183_Web_Projekt_2018\obj\Debug\M183_Web_Projekt_2018.pdb
+C:\GitHub Project\M183_Web_Projekt_2018\M183_Web_Projekt_2018\bin\System.Net.Http.Formatting.dll
+C:\GitHub Project\M183_Web_Projekt_2018\M183_Web_Projekt_2018\bin\System.Web.Http.dll
+C:\GitHub Project\M183_Web_Projekt_2018\M183_Web_Projekt_2018\bin\System.Web.Http.WebHost.dll
+C:\GitHub Project\M183_Web_Projekt_2018\M183_Web_Projekt_2018\bin\System.Net.Http.Formatting.xml
+C:\GitHub Project\M183_Web_Projekt_2018\M183_Web_Projekt_2018\bin\System.Web.Http.xml
+C:\GitHub Project\M183_Web_Projekt_2018\M183_Web_Projekt_2018\bin\System.Web.Http.WebHost.xml
+C:\GitHub Project\M183_Web_Projekt_2018\M183_Web_Projekt_2018\bin\de\System.Net.Http.Formatting.resources.dll
+C:\GitHub Project\M183_Web_Projekt_2018\M183_Web_Projekt_2018\bin\de\System.Web.Http.resources.dll
+C:\GitHub Project\M183_Web_Projekt_2018\M183_Web_Projekt_2018\bin\de\System.Web.Http.WebHost.resources.dll

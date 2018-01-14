@@ -235,7 +235,7 @@ namespace M183_Web_Projekt_2018.Controllers
             SqlConnection con = new SqlConnection();
             SqlCommand cmd = new SqlCommand();
 
-            con.ConnectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=D:\\TEMP\\M183_Projekt_2018\\Data\\m183_project.mdf;Integrated Security=True;Connect Timeout=30";
+            con.ConnectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\GitHub Project\\Data\\m183_project.mdf;Integrated Security=True;Connect Timeout=30";
             cmd.Connection = con;
 
             return cmd;
