@@ -42,18 +42,13 @@ namespace M183_Web_Projekt_2018.Controllers
             string currentPassword = "";
             var mode = "SMS"; // OR SMS
             int userid = 0;
-            // DB Connection
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\GitHub Project\\Data\\m183_project.mdf;Integrated Security=True;Connect Timeout=30";
 
-            SqlCommand cmd = new SqlCommand();
+
+            SqlCommand cmd = GetSqlConnection();
             SqlDataReader reader;
 
             cmd.CommandText = "SELECT * FROM [dbo].[User] WHERE [username] = '" + username + "' AND [password] = '" + password + "'";
-            cmd.Connection = con;
-
-            con.Open();
-
+            cmd.Connection.Open();
             reader = cmd.ExecuteReader();
 
             // Check if User exists
@@ -81,7 +76,6 @@ namespace M183_Web_Projekt_2018.Controllers
                     }
 
                     var finalString = new String(stringChars);
-
 
                     // Send SMS via Nexmo API
                     var postData = "api_key=282e7d22";
@@ -119,6 +113,7 @@ namespace M183_Web_Projekt_2018.Controllers
             }
             return View();
         }
+
         [HttpPost]
         public ActionResult TokenLogin()
         {
@@ -128,27 +123,24 @@ namespace M183_Web_Projekt_2018.Controllers
             int userid = 0;
             string current_token = "";
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\GitHub Project\\Data\\m183_project.mdf;Integrated Security=True;Connect Timeout=30";
-            SqlCommand cmd = new SqlCommand();
+
+            SqlCommand cmd = GetSqlConnection();
             SqlDataReader reader;
             cmd.CommandText = "SELECT Id FROM [dbo].[user] WHERE [username] = @current_user AND [password] = @current_password";
             cmd.Parameters.AddWithValue("@current_user", current_user);
             cmd.Parameters.AddWithValue("@current_password", current_password);
-            cmd.Connection = con;
 
-            con.Open();
+            cmd.Connection.Open();
 
             reader = cmd.ExecuteReader();
             if (reader.Read())
             {
                 userid = reader.GetInt32(0);
             }
-            con.Close();
+            cmd.Connection.Close();
             cmd.CommandText = "SELECT Token FROM [dbo].[Token] WHERE [UserId] = @userid";
             cmd.Parameters.AddWithValue("@userid", userid);
-            cmd.Connection = con;
-            con.Open();
+            cmd.Connection.Open();
 
             reader = cmd.ExecuteReader();
             if (reader.Read())
@@ -164,9 +156,22 @@ namespace M183_Web_Projekt_2018.Controllers
             {
                 ViewBag.Message = "Wrong Credentials";
             }
-            con.Close();
+            cmd.Connection.Close();
             return null;
-
         }
+
+        #region Private section
+        private SqlCommand GetSqlConnection()
+        {
+            // DB Connection
+            SqlConnection con = new SqlConnection();
+            SqlCommand cmd = new SqlCommand();
+
+            con.ConnectionString = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=D:\\TEMP\\M183_Projekt_2018\\Data\\m183_project.mdf;Integrated Security=True;Connect Timeout=30";
+            cmd.Connection = con;
+
+            return cmd;
+        }
+        #endregion
     }
 }
