@@ -12,39 +12,68 @@ namespace M183_Web_Projekt_2018.Controllers
 {
     public class UserController : Controller
     {
-
         public ActionResult Dashboard()
         {
-            var current_user = (string)Session["username"];
-            var userid = (int)Session["userid"];
-            SqlCommand cmd = GetSqlConnection();
-            SqlDataReader reader;
-            var userRole = string.Empty;
-            cmd.CommandText = "SELECT Role FROM [dbo].[user] WHERE [username] = @current_user AND [id] = @userid";
-            cmd.Parameters.Clear();
-            cmd.Parameters.AddWithValue("@current_user", current_user);
-            cmd.Parameters.AddWithValue("@userid", userid);
-
-            cmd.Connection.Open();
-
-            reader = cmd.ExecuteReader();
-            if (reader.Read())
-            {
-                userRole = reader.GetString(0);
-            }
-            cmd.Connection.Close();
-            if (userRole == "user")
-            {
-                
-            }
-            else
+            if (Session["userid"] == null)
             {
                 return RedirectToAction("Index", "Home");
             }
+            else
+            {
+                var current_user = (string)Session["username"];
+                var userid = (int)Session["userid"];
+                SqlCommand cmd = GetSqlConnection();
+                SqlDataReader reader;
+                var userRole = string.Empty;
+                cmd.CommandText = "SELECT Role FROM [dbo].[user] WHERE [username] = @current_user AND [id] = @userid";
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@current_user", current_user);
+                cmd.Parameters.AddWithValue("@userid", userid);
 
-            return View();
+                cmd.Connection.Open();
+
+                reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    userRole = reader.GetString(0);
+                }
+                cmd.Connection.Close();
+                if (userRole == "user")
+                {
+                    ShowPosts();
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                return View();
+            }
         }
+        private Post ShowPosts()
+        {
+            SqlCommand cmd = GetSqlConnection();
+            SqlDataReader reader;
+            cmd.CommandText = "SELECT [Id], [Title], [Description], [content] FROM [dbo].[Post] WHERE UserId = @userid";
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("@userId", Session["userid"]);
+            cmd.Connection.Open();
+            reader = cmd.ExecuteReader();
 
+            var post = new Post();
+            while (reader.Read())
+            {
+                post = new Post()
+                {
+                    Id = reader.GetInt32(0),
+                    Title = reader.GetString(1),
+                    Description = reader.GetString(2),
+                    Content = reader.GetString(3),
+                };
+            }
+            cmd.Connection.Close();
+
+            return post;
+        }
         private void CreateLogs(int userId)
         {
             SqlCommand cmd = GetSqlConnection();
@@ -57,7 +86,6 @@ namespace M183_Web_Projekt_2018.Controllers
             cmd.Parameters.AddWithValue("@action", "deleted");
             cmd.ExecuteNonQuery();
             cmd.Connection.Close();
-
 
             // UserLogin
             cmd.Connection.Open();
@@ -79,11 +107,19 @@ namespace M183_Web_Projekt_2018.Controllers
         [HttpPost]
         public ActionResult Logout()
         {
-            var userid = (int)Session["userid"];
-            Session.Abandon();
-            Session.Clear();
-            CreateLogs(userid);
-            return RedirectToAction("Index", "Home");
+            if (Session["userid"] != null)
+            {
+                var userid = (int)Session["userid"];
+                Session.Abandon();
+                Session.Clear();
+                CreateLogs(userid);
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
         }
 
         #region Private section

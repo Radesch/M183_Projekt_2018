@@ -134,7 +134,6 @@ namespace M183_Web_Projekt_2018.Controllers
             var userRole = "";
             var current_token = "";
 
-
             SqlCommand cmd = GetSqlConnection();
             SqlDataReader reader;
             cmd.CommandText = "SELECT Id, Role FROM [dbo].[user] WHERE [username] = @current_user AND [password] = @current_password";

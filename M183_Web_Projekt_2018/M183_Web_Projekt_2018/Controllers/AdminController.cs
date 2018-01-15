@@ -41,7 +41,7 @@ namespace M183_Web_Projekt_2018.Controllers
 
                 if (userRole == "admin")
                 {
-
+                    ShowPosts();
                 }
                 else
                 {
@@ -49,8 +49,31 @@ namespace M183_Web_Projekt_2018.Controllers
                 }
             }
             
-
             return View();
+        }
+        private Post ShowPosts()
+        {
+            SqlCommand cmd = GetSqlConnection();
+            SqlDataReader reader;
+            cmd.CommandText = "SELECT [Id], [Title], [Description], [content] FROM [dbo].[Post]";
+            cmd.Parameters.Clear();
+            cmd.Connection.Open();
+            reader = cmd.ExecuteReader();
+
+            var post = new Post();
+            while (reader.Read())
+            {
+                post = new Post()
+                {
+                    Id = reader.GetInt32(0),
+                    Title = reader.GetString(1),
+                    Description = reader.GetString(2),
+                    Content = reader.GetString(3),
+                };
+            }
+            cmd.Connection.Close();
+
+            return post;
         }
         private void CreateLogs(int userId)
         {
