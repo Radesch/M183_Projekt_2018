@@ -5,44 +5,23 @@
 
 
 <div class="row" style="margin-top:80px;">
-    <h4>Post</h4>
-    <hr />
-    <table class="table table-hover">
-        <tr>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Content</th>
-        </tr>
-        <tr>
-            <td>@Model.Title</td>
-            <td>@Model.Description</td>
-            <td>@Model.Content</td>
-        </tr>
-    </table>
-
-    <h4>Komentare</h4>
-    <hr />
-    <table class="table table-hover">
-        <tr>
-            <th>Komantar</th>
-        </tr>
-    </table>
+    <div class="col-lg-8 col-lg-offset-2">
+        <table class="table table-hover">
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Content</th>
+                <th>Detailansicht</th>
+            </tr>
+            @foreach (var post in Model)
+            {
+                <tr>
+                    <td>@post.Title</td>
+                    <td>@post.Description</td>
+                    <td>@post.Content</td>
+                    <td>@Html.ActionLink("Details", "Index", "Post", new { id = post.Id }, null)</td>
+                </tr>
+            }
+        </table>
+    </div>
 </div>
-<h4>Komentar hinzufügen</h4>
-<hr />
-<div class="form-group">
-
-    <form action="~/Post/AddComment" method="post">
-        <textarea hidden="true" name="id">@Model.Id</textarea>
-        <textarea class="form-control" rows="5" name="comment" id="comment"></textarea>
-        <br />
-
-        <input type="submit" name="" value="Kommentar Hinzufügen" class="btn btn-primary">
-        @ViewBag.Message
-    </form>
-</div>
-
-
-<p>
-    @Html.ActionLink("Zurück zur Liste", "Index")
-</p>
