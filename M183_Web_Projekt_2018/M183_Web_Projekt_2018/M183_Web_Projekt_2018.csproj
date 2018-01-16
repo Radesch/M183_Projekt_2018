@@ -206,6 +206,8 @@
     <Content Include="Views\Admin\Logout.cshtml" />
     <Content Include="Views\Home\Dashboard.cshtml" />
     <Content Include="Views\User\Dashboard.cshtml" />
+    <Content Include="Views\Post\DetailPost.cshtml" />
+    <Content Include="Views\Post\AddComment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

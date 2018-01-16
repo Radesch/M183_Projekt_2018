@@ -1,0 +1,54 @@
+﻿
+@{
+    ViewBag.Title = "DetailPost";
+}
+
+<div class="row" style="margin-top:80px;">
+    <h4>Post</h4>
+    <hr />
+    <table class="table table-hover">
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Content</th>
+        </tr>
+        <tr>
+            <td>@Model.Title</td>
+            <td>@Model.Description</td>
+            <td>@Model.Content</td>
+        </tr>
+    </table>
+
+    <h4>Kommentare</h4>
+    <hr />
+    <table class="table table-hover">
+        <tr>
+            <th>Kommentar</th>
+        </tr>
+        @foreach (var comment in Model.Comments)
+        {
+            <tr>
+                <td>@comment</td>
+            </tr>
+        }
+    </table>
+</div>
+<h4>Kommentar hinzufügen</h4>
+<hr />
+<div class="form-group">
+
+    <form action="~/Post/AddComment" method="post">
+        <input type="hidden" name="id" value="@Model.Id" />
+        <textarea class="form-control" rows="5" name="comment" id="comment"></textarea>
+        <br />
+
+        <input type="submit" name="" value="Kommentar Hinzufügen" class="btn btn-primary">
+        @ViewBag.Message
+    </form>
+</div>
+
+
+<p>
+    @Html.ActionLink("Zurück zur Liste", "Dashboard")
+</p>
+

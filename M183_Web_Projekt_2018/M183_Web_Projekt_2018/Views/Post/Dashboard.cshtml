@@ -19,7 +19,7 @@
                     <td>@post.Title</td>
                     <td>@post.Description</td>
                     <td>@post.Content</td>
-                    <td>@Html.ActionLink("Details", "Index", "Post", new { id = post.Id }, null)</td>
+                    <td>@Html.ActionLink("Details", "DetailPost", "Post", new { id = post.Id }, null)</td>
                 </tr>
             }
         </table>
