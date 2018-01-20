@@ -8,6 +8,26 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
+/**
+ *  AUFGABEN THEORIE
+ * 
+ * 1) Wir haben keinen verwendet, aus Zeitgründen... Hätten wir einen Algorythmus verwendet, dann
+ *    hätten wir uns für den SHA3-512 Algorythmus entschieden. Dieser bietet genügend komplexität, damit 
+ *    Passwort und Username nicht schnell genug herausgefunden werden könnten. Zusätzlich solte man Passwörter
+ *    bzw. Gehashte informationen 'salten', um auf nummer sicher zu gehen.
+ * 
+ * 2) Session ID theft & Eavesdropping
+ * 
+ * 3) Einerseits können Session-IDs „visuell“ als http-Parameter bzw. in Form von Cookies als Teil von unverschlüsseltem 
+ *    http-Traffic auftauchen. Des Weiteren ist es auch möglich, Cookies via Javascript auszulesen.
+ *    Gegen das Auslesen von Javascript kann man sich durch das setzen des http-Only flags schützen – 
+ *    gegen die Übermittlung der Cookies auf unverschlüsselten Wegen durch das Secure-Flag.
+ * 
+ *    Mit dem speichern der IP kann der User z. B. per SMS oder EMail benachrichtigt werden, wenn ein Login
+ *    aus z. B. dem Ausland erfolgt. Diverse Hersteller handhaben das so (Google, Apple, ...).
+ * 
+ * */
+
 namespace M183_Web_Projekt_2018.Controllers
 {
     public class HomeController : Controller
