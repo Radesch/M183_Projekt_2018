@@ -76,26 +76,26 @@ namespace M183_Web_Projekt_2018.Controllers
 
                     var finalString = new String(stringChars);
 
-                    //// Send SMS via Nexmo API
-                    //var postData = "api_key=0a98cb9c";
-                    //postData += "&api_secret=9ae22e80dcfb1e5a";
-                    //postData += "&to=" + mobileNumber;
-                    //postData += "&from=\"\"NEXMO\"\"";
-                    //postData += "&text=\"" + finalString + "\"";
-                    //var data = Encoding.ASCII.GetBytes(postData);
+                    // Send SMS via Nexmo API
+                    var postData = "api_key=0a98cb9c";
+                    postData += "&api_secret=9ae22e80dcfb1e5a";
+                    postData += "&to=" + mobileNumber;
+                    postData += "&from=\"\"NEXMO\"\"";
+                    postData += "&text=\"" + finalString + "\"";
+                    var data = Encoding.ASCII.GetBytes(postData);
 
-                    //request.Method = "POST";
-                    //request.ContentType = "application/x-www-form-urlencoded";
-                    //request.ContentLength = data.Length;
+                    request.Method = "POST";
+                    request.ContentType = "application/x-www-form-urlencoded";
+                    request.ContentLength = data.Length;
 
-                    //using (var stream = request.GetRequestStream())
-                    //{
-                    //    stream.Write(data, 0, data.Length);
-                    //}
+                    using (var stream = request.GetRequestStream())
+                    {
+                        stream.Write(data, 0, data.Length);
+                    }
 
-                    //var response = (HttpWebResponse)request.GetResponse();
-                    //var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
-                    //ViewBag.Message = responseString;
+                    var response = (HttpWebResponse)request.GetResponse();
+                    var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
+                    ViewBag.Message = responseString;
 
                     reader.Close();
                     cmd.Connection.Close();
